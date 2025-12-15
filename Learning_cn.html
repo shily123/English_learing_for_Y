@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英文学习版 | Word Cards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            /* 优化：更柔和、有活力的渐变背景 */
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 20px;
+        }
+        
+        .container {
+            max-width: 1000px; /* 适当缩小最大宽度，使内容更集中 */
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white; /* 改为白色，在深色背景上更突出 */
+            margin-bottom: 50px;
+            font-weight: 700;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            font-size: 2.8rem;
+            position: relative;
+            padding-bottom: 20px;
+        }
+        
+        /* 添加标题装饰线 */
+        /* h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 4px;
+            background: linear-gradient(90deg, #ff9a9e, #fad0c4);
+            border-radius: 2px;
+        } */
+        
+        .word-grid {
+            display: flex;
+            justify-content: center;
+            gap: 30px; /* 增加间距 */
+        }
+        
+        .word-card {
+            background: rgba(255, 255, 255, 0.95); /* 半透明白色，带模糊效果 */
+            backdrop-filter: blur(10px);
+            border-radius: 20px; /* 更大的圆角 */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.1); /* 多层阴影 */
+            padding: 40px; /* 增加内边距 */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 更平滑的动画曲线 */
+            position: relative;
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.3); /* 细边框增加质感 */
+        }
+        
+        .word-card:hover {
+            transform: translateY(-10px) scale(1.02); /* 增加缩放效果 */
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), 0 15px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* 优化顶部的装饰条 */
+        .word-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #FF9A9E, #FAD0C4, #A1C4FD, #C2E9FB);
+            background-size: 300% 100%;
+            animation: gradientShift 3s ease infinite;
+        }
+        
+        /* 添加动态渐变效果 */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* 内部单词的多列布局 */
+        .word-card {
+            column-count: 3; /* 默认4列 */
+            column-gap: 30px; /* 列间距 */
+            column-rule: 1px dashed rgba(52, 152, 219, 0.2); /* 列间分割线 */
+        }
+        
+        .word {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background-color: rgba(241, 242, 246, 0.7);
+            transition: all 0.3s ease;
+            break-inside: avoid; /* 防止单词被分割在两列 */
+            page-break-inside: avoid;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        /* 为单词添加序号 */
+        .word::before {
+            content: attr(data-index);
+            display: inline-block;
+            width: 26px;
+            height: 26px;
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 26px;
+            font-size: 14px;
+            margin-right: 12px;
+            font-weight: 600;
+        }
+        
+        .word:hover {
+            background-color: rgba(52, 152, 219, 0.15);
+            transform: translateX(5px);
+            color: #2980b9;
+        }
+        
+        /* 添加单词计数标签 */
+        .word-count {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            color: #2c3e50;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        /* 添加页脚 */
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+            padding: 20px;
+        }
+        
+        .footer a {
+            color: #FAD0C4;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* 响应式设计调整 */
+        @media (max-width: 1024px) {
+            .word-card {
+                column-count: 3;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .word-card {
+                column-count: 2;
+                padding: 30px;
+            }
+            
+            .word {
+                font-size: 18px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .word-card {
+                column-count: 1;
+                padding: 25px;
+            }
+            
+            .word {
+                font-size: 17px;
+            }
+            
+            .word-count {
+                position: relative;
+                top: 0;
+                right: 0;
+                display: inline-block;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>小狗要努力学英语！！！ 🐶📚</h1>
+        
+        <div class="word-grid">
+            <div class="word-card">
+                
+                <!-- 注意：需要为每个单词添加 data-index 属性 -->
+                <div class="word" data-index="1">hour 小时</div>
+                <div class="word" data-index="2">minute 分钟</div>
+                <div class="word" data-index="3">boring 无聊的</div>
+                <div class="word" data-index="4">dead 死的</div>
+                <div class="word" data-index="5">sincere 真诚的</div>
+                <div class="word" data-index="6">exit 出口</div>
+                <div class="word" data-index="7">sleep 睡觉</div>
+                <div class="word" data-index="8">awake 醒来</div>
+                <div class="word" data-index="9">tired 累的</div>
+                <div class="word" data-index="10">dismission 离职</div>
+                <div class="word" data-index="11">gentle 温和的</div>
+                <div class="word" data-index="12">life 生活</div>
+                <div class="word" data-index="13">change 改变</div>
+                <div class="word" data-index="14">morning 早上</div>
+                <div class="word" data-index="15">right 对的；右边</div>
+                <div class="word" data-index="16">left 左边</div>
+                <div class="word" data-index="17">true 正确的</div>
+                <div class="word" data-index="18">false 错误的</div>
+                <div class="word" data-index="19">break 中断</div>
+                <div class="word" data-index="20">delete 删除</div>
+                <div class="word" data-index="21">holiday 假期</div>
+                <div class="word" data-index="22">happy 快乐的</div>
+                <div class="word" data-index="23">fly 飞</div>
+                <div class="word" data-index="24">trip 旅行</div>
+                <div class="word" data-index="25">open 打开</div>
+                <div class="word" data-index="26">close 关闭</div>
+                <div class="word" data-index="27">shit 屎</div>
+                <div class="word" data-index="28">spicy 辣的</div>
+                <div class="word" data-index="29">plane 飞机</div>
+                <div class="word" data-index="30">car 汽车</div>
+                <div class="word" data-index="31">bus 公交车</div>
+                <div class="word" data-index="32">plan 计划</div>
+                <div class="word" data-index="33">meet 遇见</div>
+                <div class="word" data-index="34">late 晚的</div>
+                <div class="word" data-index="35">early 早的</div>
+                <div class="word" data-index="36">come 来</div>
+                <div class="word" data-index="37">go 去</div>
+                <div class="word" data-index="38">milk 牛奶</div>
+                <div class="word" data-index="39">bread 面包</div>
+                <div class="word" data-index="40">water 水</div>
+                <div class="word" data-index="41">fruit 水果</div>
+                <div class="word" data-index="42">green 绿色</div>
+                <div class="word" data-index="43">red 红色</div>
+                <div class="word" data-index="44">white 白色</div>
+                <div class="word" data-index="45">black 黑色</div>
+                <div class="word" data-index="46">cold 冷的</div>
+                <div class="word" data-index="47">hot 热的</div>
+                <div class="word" data-index="48">rain 雨</div>
+                <div class="word" data-index="49">sun 太阳</div>
+                <div class="word" data-index="50">game 比赛</div>
+                <div class="word" data-index="51">life 生活</div>
+                <div class="word" data-index="52">work 工作</div>
+                <div class="word" data-index="53">study 学习</div>
+                <div class="word" data-index="54">afternoon 下午</div>
+                <div class="word" data-index="55">evening 晚上</div>
+                <div class="word" data-index="56">night 晚上</div>
+                <div class="word" data-index="57">time 时间</div>
+                <div class="word" data-index="58">boy 男孩</div>
+                <div class="word" data-index="59">girl女孩</div>
+                <div class="word" data-index="60">man 男人</div>
+                <div class="word" data-index="61">woman 女人</div>
+                <div class="word" data-index="62">spring 春天</div>
+                <div class="word" data-index="63">summer 夏天</div>
+                <div class="word" data-index="64">autumn 秋天</div>
+                <div class="word" data-index="65">winter 冬天</div>
+                <div class="word" data-index="66">blue 蓝色</div>
+                <div class="word" data-index="67">green 绿色</div>
+                <div class="word" data-index="68">brown 棕色</div>
+                <div class="word" data-index="69">yellow 黄色</div>
+                <div class="word" data-index="70">listen 听</div>
+                <div class="word" data-index="71">say 说</div>
+                <div class="word" data-index="72">read 读</div>
+                <div class="word" data-index="73">write 写</div>
+                <div class="word" data-index="74">love 爱</div>
+                <div class="word" data-index="75">like 喜欢</div>
+                <div class="word" data-index="76">hate 讨厌</div>
+                <div class="word" data-index="77">dislike 不喜欢</div>
+                <div class="word" data-index="78">mountain 山</div>
+                <div class="word" data-index="79">water 水</div>
+                <div class="word" data-index="80">flower 鲜花</div>
+                <div class="word" data-index="81">grass 草</div>
+                <div class="word" data-index="82">big 大的</div>
+                <div class="word" data-index="83">small 小的</div>
+                <div class="word" data-index="84">long 长的</div>
+                <div class="word" data-index="85">short 短的</div>
+                <div class="word" data-index="86">Monday 周一</div>
+                <div class="word" data-index="87">Tuesday 周二</div>
+                <div class="word" data-index="88">Wednesday 周三</div>
+                <div class="word" data-index="89">Thursday 周四</div>
+                <div class="word" data-index="90">Friday 周五</div>
+                <div class="word" data-index="91">Saturday 周六</div>
+                <div class="word" data-index="92">Sunday 周日</div>
+                <div class="word" data-index="93">holiday 假期</div>
+                <div class="word" data-index="94">meat 肉</div>
+                <div class="word" data-index="95">beef 牛肉</div>
+                <div class="word" data-index="96">pork 猪肉</div>
+                <div class="word" data-index="97">chicken 鸡肉</div>
+                <div class="word" data-index="98">one 一</div>
+                <div class="word" data-index="99">two 二</div>
+                <div class="word" data-index="100">three 三</div>
+                <div class="word" data-index="101">four 四</div>
+                <div class="word" data-index="102">five 五</div>
+                <div class="word" data-index="103">six 六</div>
+                <div class="word" data-index="104">seven 七</div>
+                <div class="word" data-index="105">eight 八</div>
+                <div class="word" data-index="106">nine 九</div>
+                <div class="word" data-index="107">ten 十</div>
+                <div class="word" data-index="108">eleven 十一</div>
+                <div class="word" data-index="109">twelve 十二</div>
+                <div class="word" data-index="110">foot 脚</div>
+                <div class="word" data-index="111">ball 球</div>
+                <div class="word" data-index="112">football 足球</div>
+                <div class="word" data-index="113">hand 手</div>
+                <div class="word" data-index="114">bike 自行车</div>
+                <div class="word" data-index="115">make 做</div>
+                <div class="word" data-index="116">dream 梦</div>
+                <div class="word" data-index="117">awake 醒来</div>
+                <div class="word" data-index="118">Chinese 中文</div>
+                <div class="word" data-index="119">English 英文</div>
+                <div class="word" data-index="120">math 数学</div>
+                <div class="word" data-index="121">teacher 老师</div>
+                <div class="word" data-index="122">new 新的</div>
+                <div class="word" data-index="123">old 旧的</div>
+                <div class="word" data-index="124">young 年轻的</div>
+                <div class="word" data-index="125">age 年龄</div>
+                <div class="word" data-index="126">friend 朋友</div>
+                <div class="word" data-index="127">boyfriend 男朋友</div>
+                <div class="word" data-index="128">girlfriend 女朋友</div>
+                <div class="word" data-index="129">enemy 仇人</div>
+                <div class="word" data-index="130">today 今天</div>
+                <div class="word" data-index="131">exam 考试</div>
+                <div class="word" data-index="132">fighting 加油</div>
+                <div class="word" data-index="133">success 成果</div>
+                <div class="word" data-index="134">moon 月亮</div>
+                <div class="word" data-index="135">sunset 日落</div>
+                <div class="word" data-index="136">lake 湖</div>
+                <div class="word" data-index="137">sea 海</div>
+                <div class="word" data-index="138">my 我的</div>
+                <div class="word" data-index="139">your 你的</div>
+                <div class="word" data-index="140">his 他的</div>
+                <div class="word" data-index="141">her 她的</div>
+                <div class="word" data-index="142">their 他们的</div>
+                <div class="word" data-index="143">it 它</div>
+                <div class="word" data-index="144">he 他</div>
+                <div class="word" data-index="145">she 她</div>
+                <div class="word" data-index="146">sing 唱</div>
+                <div class="word" data-index="147">song 歌</div>
+                <div class="word" data-index="148">walk 步行</div>
+                <div class="word" data-index="149">run 跑步</div>
+                <div class="word" data-index="150">strong 强壮的</div>
+                <div class="word" data-index="151">thin 瘦的</div>
+                <div class="word" data-index="152">fat 胖的</div>
+                <div class="word" data-index="153">body 身体</div>
+                <div class="word" data-index="154">roast 烤</div>
+                <div class="word" data-index="155">cook 做饭</div>
+                <div class="word" data-index="156">fry 炸</div>
+                <div class="word" data-index="157">steam 蒸</div>
+                <div class="word" data-index="158">bottle 瓶</div>
+                <div class="word" data-index="159">shoe 鞋</div>
+                <div class="word" data-index="160">clothes 衣服</div>
+                <div class="word" data-index="161">hair 头发</div>
+                <div class="word" data-index="162"></div>
+                <div class="word" data-index="163"></div>
+                <div class="word" data-index="164"></div>
+                <div class="word" data-index="165"></div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>🚀🚀🚀 哥们，加油！！！姐姐看好你哦~~ 💪💪💪</p>
+        </div>
+    </div>
+
+    <script>
+        // 为每个单词添加悬停音效（可选）
+        document.querySelectorAll('.word').forEach(word => {
+            word.addEventListener('mouseenter', function() {
+                // 这里可以添加音效，暂时用控制台输出代替
+                console.log('学习单词:', this.textContent.replace(/^\d+\s*/, ''));
+            });
+        });
+        
+        // 更新学习天数（示例）
+        const startDate = new Date('2023-10-01');
+        const today = new Date();
+        const diffTime = Math.abs(today - startDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        document.querySelector('.footer strong').textContent = diffDays;
+    </script>
+</body>
+</html>

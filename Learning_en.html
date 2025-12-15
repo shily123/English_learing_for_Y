@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英文学习版 | Word Cards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            /* 优化：更柔和、有活力的渐变背景 */
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 20px;
+        }
+        
+        .container {
+            max-width: 1000px; /* 适当缩小最大宽度，使内容更集中 */
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white; /* 改为白色，在深色背景上更突出 */
+            margin-bottom: 50px;
+            font-weight: 700;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            font-size: 2.8rem;
+            position: relative;
+            padding-bottom: 20px;
+        }
+        
+        /* 添加标题装饰线 */
+        /* h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 4px;
+            background: linear-gradient(90deg, #ff9a9e, #fad0c4);
+            border-radius: 2px;
+        } */
+        
+        .word-grid {
+            display: flex;
+            justify-content: center;
+            gap: 30px; /* 增加间距 */
+        }
+        
+        .word-card {
+            background: rgba(255, 255, 255, 0.95); /* 半透明白色，带模糊效果 */
+            backdrop-filter: blur(10px);
+            border-radius: 20px; /* 更大的圆角 */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.1); /* 多层阴影 */
+            padding: 40px; /* 增加内边距 */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 更平滑的动画曲线 */
+            position: relative;
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.3); /* 细边框增加质感 */
+        }
+        
+        .word-card:hover {
+            transform: translateY(-10px) scale(1.02); /* 增加缩放效果 */
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), 0 15px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* 优化顶部的装饰条 */
+        .word-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #FF9A9E, #FAD0C4, #A1C4FD, #C2E9FB);
+            background-size: 300% 100%;
+            animation: gradientShift 3s ease infinite;
+        }
+        
+        /* 添加动态渐变效果 */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* 内部单词的多列布局 */
+        .word-card {
+            column-count: 3; /* 默认4列 */
+            column-gap: 30px; /* 列间距 */
+            column-rule: 1px dashed rgba(52, 152, 219, 0.2); /* 列间分割线 */
+        }
+        
+        .word {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background-color: rgba(241, 242, 246, 0.7);
+            transition: all 0.3s ease;
+            break-inside: avoid; /* 防止单词被分割在两列 */
+            page-break-inside: avoid;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        /* 为单词添加序号 */
+        .word::before {
+            content: attr(data-index);
+            display: inline-block;
+            width: 26px;
+            height: 26px;
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 26px;
+            font-size: 14px;
+            margin-right: 12px;
+            font-weight: 600;
+        }
+        
+        .word:hover {
+            background-color: rgba(52, 152, 219, 0.15);
+            transform: translateX(5px);
+            color: #2980b9;
+        }
+        
+        /* 添加单词计数标签 */
+        .word-count {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            color: #2c3e50;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        /* 添加页脚 */
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+            padding: 20px;
+        }
+        
+        .footer a {
+            color: #FAD0C4;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* 响应式设计调整 */
+        @media (max-width: 1024px) {
+            .word-card {
+                column-count: 3;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .word-card {
+                column-count: 2;
+                padding: 30px;
+            }
+            
+            .word {
+                font-size: 18px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .word-card {
+                column-count: 1;
+                padding: 25px;
+            }
+            
+            .word {
+                font-size: 17px;
+            }
+            
+            .word-count {
+                position: relative;
+                top: 0;
+                right: 0;
+                display: inline-block;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>小狗要努力学英语！！！ 🐶📚</h1>
+        
+        <div class="word-grid">
+            <div class="word-card">
+                
+                <!-- 注意：需要为每个单词添加 data-index 属性 -->
+                <div class="word" data-index="1">hour</div>
+                <div class="word" data-index="2">minute</div>
+                <div class="word" data-index="3">boring</div>
+                <div class="word" data-index="4">dead</div>
+                <div class="word" data-index="5">sincere</div>
+                <div class="word" data-index="6">exit</div>
+                <div class="word" data-index="7">sleep</div>
+                <div class="word" data-index="8">awake</div>
+                <div class="word" data-index="9">tired</div>
+                <div class="word" data-index="10">dismission</div>
+                <div class="word" data-index="11">gentle</div>
+                <div class="word" data-index="12">life</div>
+                <div class="word" data-index="13">change</div>
+                <div class="word" data-index="14">morning</div>
+                <div class="word" data-index="15">right</div>
+                <div class="word" data-index="16">left</div>
+                <div class="word" data-index="17">true</div>
+                <div class="word" data-index="18">false</div>
+                <div class="word" data-index="19">break</div>
+                <div class="word" data-index="20">delete</div>
+                <div class="word" data-index="21">holiday</div>
+                <div class="word" data-index="22">happy</div>
+                <div class="word" data-index="23">fly</div>
+                <div class="word" data-index="24">trip</div>
+                <div class="word" data-index="25">open</div>
+                <div class="word" data-index="26">close</div>
+                <div class="word" data-index="27">shit</div>
+                <div class="word" data-index="28">spicy</div>
+                <div class="word" data-index="29">plane</div>
+                <div class="word" data-index="30">car</div>
+                <div class="word" data-index="31">bus</div>
+                <div class="word" data-index="32">plan</div>
+                <div class="word" data-index="33">meet</div>
+                <div class="word" data-index="34">late</div>
+                <div class="word" data-index="35">early</div>
+                <div class="word" data-index="36">come</div>
+                <div class="word" data-index="37">go</div>
+                <div class="word" data-index="38">milk</div>
+                <div class="word" data-index="39">bread</div>
+                <div class="word" data-index="40">water</div>
+                <div class="word" data-index="41">fruit</div>
+                <div class="word" data-index="42">green</div>
+                <div class="word" data-index="43">red</div>
+                <div class="word" data-index="44">white</div>
+                <div class="word" data-index="45">black</div>
+                <div class="word" data-index="46">cold</div>
+                <div class="word" data-index="47">hot</div>
+                <div class="word" data-index="48">rain</div>
+                <div class="word" data-index="49">sun</div>
+                <div class="word" data-index="50">game</div>
+                <div class="word" data-index="51">life</div>
+                <div class="word" data-index="52">work</div>
+                <div class="word" data-index="53">study</div>
+                <div class="word" data-index="54">afternoon</div>
+                <div class="word" data-index="55">evening</div>
+                <div class="word" data-index="56">night</div>
+                <div class="word" data-index="57">time</div>
+                <div class="word" data-index="58">boy</div>
+                <div class="word" data-index="59">girl</div>
+                <div class="word" data-index="60">man</div>
+                <div class="word" data-index="61">woman</div>
+                <div class="word" data-index="62">spring</div>
+                <div class="word" data-index="63">summer</div>
+                <div class="word" data-index="64">autumn</div>
+                <div class="word" data-index="65">winter</div>
+                <div class="word" data-index="66">blue</div>
+                <div class="word" data-index="67">green</div>
+                <div class="word" data-index="68">brown</div>
+                <div class="word" data-index="69">yellow</div>
+                <div class="word" data-index="70">listen</div>
+                <div class="word" data-index="71">say</div>
+                <div class="word" data-index="72">read</div>
+                <div class="word" data-index="73">write</div>
+                <div class="word" data-index="74">love</div>
+                <div class="word" data-index="75">like</div>
+                <div class="word" data-index="76">hate</div>
+                <div class="word" data-index="77">dislike</div>
+                <div class="word" data-index="78">mountain</div>
+                <div class="word" data-index="79">water</div>
+                <div class="word" data-index="80">flower</div>
+                <div class="word" data-index="81">grass</div>
+                <div class="word" data-index="82">big</div>
+                <div class="word" data-index="83">small</div>
+                <div class="word" data-index="84">long</div>
+                <div class="word" data-index="85">short</div>
+                <div class="word" data-index="86">Monday</div>
+                <div class="word" data-index="87">Tuesday</div>
+                <div class="word" data-index="88">Wednesday</div>
+                <div class="word" data-index="89">Thursday</div>
+                <div class="word" data-index="90">Friday</div>
+                <div class="word" data-index="91">Saturday</div>
+                <div class="word" data-index="92">Sunday</div>
+                <div class="word" data-index="93">holiday</div>
+                <div class="word" data-index="94">meat</div>
+                <div class="word" data-index="95">beef</div>
+                <div class="word" data-index="96">pork</div>
+                <div class="word" data-index="97">chicken</div>
+                <div class="word" data-index="98">one</div>
+                <div class="word" data-index="99">two</div>
+                <div class="word" data-index="100">three</div>
+                <div class="word" data-index="101">four</div>
+                <div class="word" data-index="102">five</div>
+                <div class="word" data-index="103">six</div>
+                <div class="word" data-index="104">seven</div>
+                <div class="word" data-index="105">eight</div>
+                <div class="word" data-index="106">nine</div>
+                <div class="word" data-index="107">ten</div>
+                <div class="word" data-index="108">eleven</div>
+                <div class="word" data-index="109">twelve</div>
+                <div class="word" data-index="110">foot</div>
+                <div class="word" data-index="111">ball</div>
+                <div class="word" data-index="112">football</div>
+                <div class="word" data-index="113">hand</div>
+                <div class="word" data-index="114">bike</div>
+                <div class="word" data-index="115">make</div>
+                <div class="word" data-index="116">dream</div>
+                <div class="word" data-index="117">awake</div>
+                <div class="word" data-index="118">Chinese</div>
+                <div class="word" data-index="119">English</div>
+                <div class="word" data-index="120">math</div>
+                <div class="word" data-index="121">teacher</div>
+                <div class="word" data-index="122">new</div>
+                <div class="word" data-index="123">old</div>
+                <div class="word" data-index="124">young</div>
+                <div class="word" data-index="125">age</div>
+                <div class="word" data-index="126">friend</div>
+                <div class="word" data-index="127">boyfriend</div>
+                <div class="word" data-index="128">girlfriend</div>
+                <div class="word" data-index="129">enemy</div>
+                <div class="word" data-index="130">today</div>
+                <div class="word" data-index="131">exam</div>
+                <div class="word" data-index="132">fighting</div>
+                <div class="word" data-index="133">success</div>
+                <div class="word" data-index="134">moon</div>
+                <div class="word" data-index="135">sunset</div>
+                <div class="word" data-index="136">lake</div>
+                <div class="word" data-index="137">sea</div>
+                <div class="word" data-index="138">my</div>
+                <div class="word" data-index="139">your</div>
+                <div class="word" data-index="140">his</div>
+                <div class="word" data-index="141">her</div>
+                <div class="word" data-index="142">their</div>
+                <div class="word" data-index="143">it</div>
+                <div class="word" data-index="144">he</div>
+                <div class="word" data-index="145">she</div>
+                <div class="word" data-index="146">sing</div>
+                <div class="word" data-index="147">song</div>
+                <div class="word" data-index="148">walk</div>
+                <div class="word" data-index="149">run</div>
+                <div class="word" data-index="150">strong</div>
+                <div class="word" data-index="151">thin</div>
+                <div class="word" data-index="152">fat</div>
+                <div class="word" data-index="153">body</div>
+                <div class="word" data-index="154">roast</div>
+                <div class="word" data-index="155">cook</div>
+                <div class="word" data-index="156">fry</div>
+                <div class="word" data-index="157">steam</div>
+                <div class="word" data-index="158">bottle</div>
+                <div class="word" data-index="159">shoe</div>
+                <div class="word" data-index="160">clothes</div>
+                <div class="word" data-index="161">hair</div>
+                <div class="word" data-index="162"></div>
+                <div class="word" data-index="163"></div>
+                <div class="word" data-index="164"></div>
+                <div class="word" data-index="165"></div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>🚀🚀🚀 哥们，加油！！！姐姐看好你哦~~ 💪💪💪</p>
+        </div>
+    </div>
+
+    <script>
+        // 为每个单词添加悬停音效（可选）
+        document.querySelectorAll('.word').forEach(word => {
+            word.addEventListener('mouseenter', function() {
+                // 这里可以添加音效，暂时用控制台输出代替
+                console.log('学习单词:', this.textContent.replace(/^\d+\s*/, ''));
+            });
+        });
+        
+        // 更新学习天数（示例）
+        const startDate = new Date('2023-10-01');
+        const today = new Date();
+        const diffTime = Math.abs(today - startDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        document.querySelector('.footer strong').textContent = diffDays;
+    </script>
+</body>
+</html>
